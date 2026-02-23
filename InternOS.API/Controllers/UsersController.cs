@@ -306,6 +306,47 @@ public class UsersController : ControllerBase
         }
     }
 
+    [HttpGet("chat-partners")]
+    [Authorize]
+    public async Task<IActionResult> GetChatPartners()
+    {
+        try
+        {
+            var currentUserIdClaim = User.FindFirstValue(ClaimTypes.NameIdentifier);
+            if (!int.TryParse(currentUserIdClaim, out var currentUserId))
+                return Unauthorized(new { message = "Invalid user token." });
+
+            var currentUser = await _context.Users.FirstOrDefaultAsync(u => u.Id == currentUserId);
+            if (currentUser == null)
+                return Unauthorized(new { message = "User not found." });
+
+            var query = _context.Users.Where(u => u.Id != currentUserId);
+
+            if (currentUser.Role == UserRole.Mentor)
+                query = query.Where(u => u.Role == UserRole.Intern);
+            else if (currentUser.Role == UserRole.Intern)
+                query = query.Where(u => u.Role == UserRole.Mentor);
+            else
+                query = query.Where(u => u.Role == UserRole.Mentor || u.Role == UserRole.Intern);
+
+            var users = await query
+                .Select(u => new
+                {
+                    u.Id,
+                    u.FullName,
+                    u.Email,
+                    Role = u.Role.ToString()
+                })
+                .ToListAsync();
+
+            return Ok(users);
+        }
+        catch (Exception ex)
+        {
+            return StatusCode(500, new { message = "Error fetching chat partners", error = ex.Message });
+        }
+    }
+
     [HttpGet("{id}/dependencies")]
     [Authorize(Roles = "Admin")]
     public async Task<IActionResult> GetUserDependencies(int id)

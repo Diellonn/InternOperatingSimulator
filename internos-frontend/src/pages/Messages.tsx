@@ -27,16 +27,20 @@ const Messages = () => {
   const loadPartnerUsers = async () => {
     if (!currentUser) return [] as User[];
 
-    if (currentUser.role === 'Admin') {
-      const allUsers = await userService.getAllUsers();
-      return allUsers.filter((user) => user.role === 'Mentor' || user.role === 'Intern');
-    }
+    try {
+      return await userService.getChatPartners();
+    } catch {
+      if (currentUser.role === 'Admin') {
+        const allUsers = await userService.getAllUsers();
+        return allUsers.filter((user) => user.role === 'Mentor' || user.role === 'Intern');
+      }
 
-    if (currentUser.role === 'Mentor') {
-      return await userService.getInternUsers();
-    }
+      if (currentUser.role === 'Mentor') {
+        return await userService.getInternUsers();
+      }
 
-    return await userService.getMentorUsers();
+      return await userService.getMentorUsers();
+    }
   };
 
   const loadConversations = async (userId: number) => {

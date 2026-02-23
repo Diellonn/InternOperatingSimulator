@@ -75,6 +75,16 @@ class UserService {
     }
   }
 
+  async getChatPartners() {
+    try {
+      const response = await axiosInstance.get<User[]>('/users/chat-partners');
+      return response.data;
+    } catch (error) {
+      console.error('Error fetching chat partners:', error);
+      throw error;
+    }
+  }
+
   async createUser(data: CreateUserRequest) {
     try {
       const response = await axiosInstance.post<{ message: string; user: User }>('/users', data);
