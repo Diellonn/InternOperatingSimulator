@@ -281,6 +281,31 @@ public class UsersController : ControllerBase
         }
     }
 
+    [HttpGet("mentors")]
+    [Authorize]
+    public async Task<IActionResult> GetMentors()
+    {
+        try
+        {
+            var mentors = await _context.Users
+                .Where(u => u.Role == UserRole.Mentor)
+                .Select(u => new
+                {
+                    u.Id,
+                    u.FullName,
+                    u.Email,
+                    Role = u.Role.ToString()
+                })
+                .ToListAsync();
+
+            return Ok(mentors);
+        }
+        catch (Exception ex)
+        {
+            return StatusCode(500, new { message = "Error fetching mentors", error = ex.Message });
+        }
+    }
+
     [HttpGet("{id}/dependencies")]
     [Authorize(Roles = "Admin")]
     public async Task<IActionResult> GetUserDependencies(int id)

@@ -17,6 +17,21 @@ const Messages = () => {
   const [error, setError] = useState('');
   const messageEndRef = useRef<HTMLDivElement>(null);
 
+  const loadPartnerUsers = async () => {
+    if (!currentUser) return [] as User[];
+
+    if (currentUser.role === 'Admin') {
+      const allUsers = await userService.getAllUsers();
+      return allUsers.filter((user) => user.role === 'Mentor' || user.role === 'Intern');
+    }
+
+    if (currentUser.role === 'Mentor') {
+      return await userService.getInternUsers();
+    }
+
+    return await userService.getMentorUsers();
+  };
+
   const loadConversations = async (userId: number) => {
     const data = await messagesService.getConversations(userId);
     setConversations(data);
@@ -40,11 +55,11 @@ const Messages = () => {
     const initialize = async () => {
       try {
         setLoading(true);
-        const [allUsers] = await Promise.all([
-          userService.getAllUsers(),
+        const [partners] = await Promise.all([
+          loadPartnerUsers(),
           loadConversations(currentUser.id),
         ]);
-        setUsers(allUsers);
+        setUsers(partners);
         setError('');
       } catch {
         setError('Failed to load chat data.');

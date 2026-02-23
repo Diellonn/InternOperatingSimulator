@@ -65,6 +65,16 @@ class UserService {
     }
   }
 
+  async getMentorUsers() {
+    try {
+      const response = await axiosInstance.get<User[]>('/users/mentors');
+      return response.data;
+    } catch (error) {
+      console.error('Error fetching mentors:', error);
+      throw error;
+    }
+  }
+
   async createUser(data: CreateUserRequest) {
     try {
       const response = await axiosInstance.post<{ message: string; user: User }>('/users', data);
