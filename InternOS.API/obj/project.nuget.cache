@@ -1,8 +1,8 @@
 {
   "version": 2,
-  "dgSpecHash": "gD1a9rLsOqk=",
+  "dgSpecHash": "QasVj27UcMk=",
   "success": true,
-  "projectFilePath": "C:\\Users\\diell\\Desktop\\intern\\InternOS.API\\InternOS.API.csproj",
+  "projectFilePath": "C:\\Users\\diell\\Desktop\\InernOS\\InternOperatingSimulator\\InternOS.API\\InternOS.API.csproj",
   "expectedPackageFiles": [
     "C:\\Users\\diell\\.nuget\\packages\\azure.core\\1.38.0\\azure.core.1.38.0.nupkg.sha512",
     "C:\\Users\\diell\\.nuget\\packages\\azure.identity\\1.11.4\\azure.identity.1.11.4.nupkg.sha512",

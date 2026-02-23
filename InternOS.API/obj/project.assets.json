@@ -4958,11 +4958,11 @@
   "project": {
     "version": "1.0.0",
     "restore": {
-      "projectUniqueName": "C:\\Users\\diell\\Desktop\\intern\\InternOS.API\\InternOS.API.csproj",
+      "projectUniqueName": "C:\\Users\\diell\\Desktop\\InernOS\\InternOperatingSimulator\\InternOS.API\\InternOS.API.csproj",
       "projectName": "InternOS.API",
-      "projectPath": "C:\\Users\\diell\\Desktop\\intern\\InternOS.API\\InternOS.API.csproj",
+      "projectPath": "C:\\Users\\diell\\Desktop\\InernOS\\InternOperatingSimulator\\InternOS.API\\InternOS.API.csproj",
       "packagesPath": "C:\\Users\\diell\\.nuget\\packages\\",
-      "outputPath": "C:\\Users\\diell\\Desktop\\intern\\InternOS.API\\obj\\",
+      "outputPath": "C:\\Users\\diell\\Desktop\\InernOS\\InternOperatingSimulator\\InternOS.API\\obj\\",
       "projectStyle": "PackageReference",
       "fallbackFolders": [
         "C:\\Program Files (x86)\\Microsoft Visual Studio\\Shared\\NuGetPackages"

@@ -63,15 +63,16 @@ builder.Services.AddDbContext<AppDbContext>(options =>
     options.UseSqlServer(builder.Configuration.GetConnectionString("DefaultConnection")));
 
 builder.Services.AddCors(options => {
-    options.AddPolicy("AllowReact", policy => {
-        policy.WithOrigins("http://localhost:5173") // React's default port
+    options.AddPolicy("AllowAll", policy => 
+        policy.AllowAnyOrigin()
               .AllowAnyMethod()
-              .AllowAnyHeader();
-    });
+              .AllowAnyHeader());
 });
 
+// Use this BEFORE app.MapControllers()
+
 var app = builder.Build();
-app.UseCors("AllowReact");
+app.UseCors("AllowAll");
 
 var uploadsPath = Path.Combine(builder.Environment.ContentRootPath, "Uploads");
 Directory.CreateDirectory(uploadsPath);
