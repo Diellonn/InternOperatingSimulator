@@ -5,6 +5,7 @@ export interface User {
   fullName: string;
   email: string;
   role: string;
+  profilePhotoUrl?: string | null;
 }
 
 export interface CreateUserRequest {

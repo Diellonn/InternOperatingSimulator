@@ -16,11 +16,13 @@ public class MessagesController : ControllerBase
 {
     private readonly IMessageRepository _messageRepo;
     private readonly AppDbContext _context;
+    private readonly IWebHostEnvironment _environment;
 
-    public MessagesController(IMessageRepository messageRepo, AppDbContext context)
+    public MessagesController(IMessageRepository messageRepo, AppDbContext context, IWebHostEnvironment environment)
     {
         _messageRepo = messageRepo;
         _context = context;
+        _environment = environment;
     }
 
     [HttpGet("conversations")]
@@ -45,6 +47,7 @@ public class MessagesController : ControllerBase
                     ParticipantIds = new[] { currentUserId, partner.Id },
                     ParticipantNames = new[] { currentUser.FullName, partner.FullName },
                     ParticipantRoles = new[] { currentUser.Role.ToString(), partner.Role.ToString() },
+                    ParticipantPhotoUrls = new[] { GetLatestPhotoUrl(currentUserId), GetLatestPhotoUrl(partner.Id) },
                     LastMessage = latestMessage.Content,
                     LastMessageAt = latestMessage.CreatedAt
                 };
@@ -71,6 +74,7 @@ public class MessagesController : ControllerBase
             SenderId = m.SenderUserId,
             SenderName = m.SenderUser.FullName,
             SenderRole = m.SenderUser.Role.ToString(),
+            SenderProfilePhotoUrl = GetLatestPhotoUrl(m.SenderUserId),
             RecipientId = m.RecipientUserId,
             Content = m.Content,
             CreatedAt = m.CreatedAt
@@ -100,6 +104,7 @@ public class MessagesController : ControllerBase
             ParticipantIds = new[] { currentUserId, request.ParticipantUserId },
             ParticipantNames = new[] { currentUser.FullName, partner.FullName },
             ParticipantRoles = new[] { currentUser.Role.ToString(), partner.Role.ToString() },
+            ParticipantPhotoUrls = new[] { GetLatestPhotoUrl(currentUserId), GetLatestPhotoUrl(request.ParticipantUserId) },
             LastMessage = "Conversation started",
             LastMessageAt = DateTime.UtcNow
         });
@@ -134,6 +139,7 @@ public class MessagesController : ControllerBase
             SenderId = senderUserId,
             SenderName = sender.FullName,
             SenderRole = sender.Role.ToString(),
+            SenderProfilePhotoUrl = GetLatestPhotoUrl(senderUserId),
             RecipientId = request.RecipientUserId,
             Content = saved.Content,
             CreatedAt = saved.CreatedAt
@@ -155,5 +161,20 @@ public class MessagesController : ControllerBase
         if (!int.TryParse(parts[1], out var userIdA)) return null;
         if (!int.TryParse(parts[2], out var userIdB)) return null;
         return (userIdA, userIdB);
+    }
+
+    private string? GetLatestPhotoUrl(int userId)
+    {
+        var profilePath = Path.Combine(_environment.ContentRootPath, "Uploads", "profile-photos", userId.ToString());
+        if (!Directory.Exists(profilePath)) return null;
+
+        var latest = Directory.GetFiles(profilePath)
+            .Select(path => new FileInfo(path))
+            .OrderByDescending(f => f.CreationTimeUtc)
+            .FirstOrDefault();
+
+        if (latest == null) return null;
+
+        return $"{Request.Scheme}://{Request.Host}/uploads/profile-photos/{userId}/{latest.Name}";
     }
 }

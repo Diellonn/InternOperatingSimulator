@@ -2,8 +2,11 @@ import { useEffect, useState, useRef } from 'react';
 import { Camera, KeyRound, Save, UserCircle2, Mail, User, ShieldCheck, Loader2 } from 'lucide-react';
 import { motion } from 'framer-motion';
 import profileService, { type IProfile } from '../api/profile.service';
+import authService from '../api/auth.service';
+import { getCachedProfilePhoto, setCachedProfilePhoto } from '../utils/profilePhotoCache';
 
 const ProfileSettings = () => {
+  const currentUser = authService.getCurrentUser();
   const [profile, setProfile] = useState<IProfile | null>(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState('');
@@ -27,10 +30,13 @@ const ProfileSettings = () => {
         setProfile(data);
         setFullName(data.fullName);
         setEmail(data.email);
+        if (currentUser?.id) {
+          setCachedProfilePhoto(currentUser.id, data.profilePhotoUrl || null);
+        }
       })
       .catch((err: any) => setError(err.response?.data?.message || 'Failed to load profile.'))
       .finally(() => setLoading(false));
-  }, []);
+  }, [currentUser?.id]);
 
   const handleProfileSave = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -92,6 +98,9 @@ const ProfileSettings = () => {
     try {
       const result = await profileService.uploadPhoto(file);
       setProfile(prev => prev ? { ...prev, profilePhotoUrl: result.profilePhotoUrl } : prev);
+      if (currentUser?.id) {
+        setCachedProfilePhoto(currentUser.id, result.profilePhotoUrl || null);
+      }
       setSuccess('Photo uploaded successfully.');
     } catch (err: any) {
       setError('Photo upload failed.');
@@ -105,7 +114,11 @@ const ProfileSettings = () => {
     </div>
   );
 
-  const avatarSrc: string | undefined = photoPreview ?? profile?.profilePhotoUrl ?? undefined;
+  const avatarSrc: string | undefined =
+    photoPreview ??
+    profile?.profilePhotoUrl ??
+    getCachedProfilePhoto(currentUser?.id) ??
+    undefined;
 
   return (
     <div className="max-w-5xl mx-auto pb-20">

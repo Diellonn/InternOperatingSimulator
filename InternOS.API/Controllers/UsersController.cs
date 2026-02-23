@@ -15,10 +15,12 @@ namespace InternOS.API.Controllers;
 public class UsersController : ControllerBase
 {
     private readonly AppDbContext _context;
+    private readonly IWebHostEnvironment _environment;
 
-    public UsersController(AppDbContext context)
+    public UsersController(AppDbContext context, IWebHostEnvironment environment)
     {
         _context = context;
+        _environment = environment;
     }
 
     [HttpGet]
@@ -339,12 +341,36 @@ public class UsersController : ControllerBase
                 })
                 .ToListAsync();
 
-            return Ok(users);
+            var response = users.Select(u => new
+            {
+                u.Id,
+                u.FullName,
+                u.Email,
+                u.Role,
+                ProfilePhotoUrl = GetLatestPhotoUrl(u.Id)
+            });
+
+            return Ok(response);
         }
         catch (Exception ex)
         {
             return StatusCode(500, new { message = "Error fetching chat partners", error = ex.Message });
         }
+    }
+
+    private string? GetLatestPhotoUrl(int userId)
+    {
+        var profilePath = Path.Combine(_environment.ContentRootPath, "Uploads", "profile-photos", userId.ToString());
+        if (!Directory.Exists(profilePath)) return null;
+
+        var latest = Directory.GetFiles(profilePath)
+            .Select(path => new FileInfo(path))
+            .OrderByDescending(f => f.CreationTimeUtc)
+            .FirstOrDefault();
+
+        if (latest == null) return null;
+
+        return $"{Request.Scheme}://{Request.Host}/uploads/profile-photos/{userId}/{latest.Name}";
     }
 
     [HttpGet("{id}/dependencies")]

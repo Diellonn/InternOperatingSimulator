@@ -5,6 +5,7 @@ export interface IConversation {
   participantIds: number[];
   participantNames: string[];
   participantRoles: string[];
+  participantPhotoUrls?: Array<string | null>;
   lastMessage: string;
   lastMessageAt: string;
 }
@@ -15,6 +16,7 @@ export interface IMessage {
   senderId: number;
   senderName: string;
   senderRole: string;
+  senderProfilePhotoUrl?: string | null;
   recipientId: number;
   content: string;
   createdAt: string;
@@ -30,9 +32,11 @@ interface ISendMessagePayload {
   senderId: number;
   senderName: string;
   senderRole: string;
+  senderProfilePhotoUrl?: string | null;
   recipientId: number;
   recipientName: string;
   recipientRole: string;
+  recipientProfilePhotoUrl?: string | null;
   content: string;
 }
 
@@ -88,8 +92,8 @@ class MessagesService {
   }
 
   async startConversation(
-    currentUser: { id: number; fullName: string; role: string },
-    partner: { id: number; fullName: string; role: string }
+    currentUser: { id: number; fullName: string; role: string; profilePhotoUrl?: string | null },
+    partner: { id: number; fullName: string; role: string; profilePhotoUrl?: string | null }
   ): Promise<IConversation> {
     const conversationId = this.buildConversationId(currentUser.id, partner.id);
 
@@ -109,6 +113,7 @@ class MessagesService {
         participantIds: [currentUser.id, partner.id],
         participantNames: [currentUser.fullName, partner.fullName],
         participantRoles: [currentUser.role, partner.role],
+        participantPhotoUrls: [currentUser.profilePhotoUrl || null, partner.profilePhotoUrl || null],
         lastMessage: 'Conversation started',
         lastMessageAt: now,
       };
@@ -136,6 +141,7 @@ class MessagesService {
         senderId: payload.senderId,
         senderName: payload.senderName,
         senderRole: payload.senderRole,
+        senderProfilePhotoUrl: payload.senderProfilePhotoUrl || null,
         recipientId: payload.recipientId,
         content: payload.content,
         createdAt: now,
@@ -148,6 +154,7 @@ class MessagesService {
           participantIds: [payload.senderId, payload.recipientId],
           participantNames: [payload.senderName, payload.recipientName],
           participantRoles: [payload.senderRole, payload.recipientRole],
+          participantPhotoUrls: [payload.senderProfilePhotoUrl || null, payload.recipientProfilePhotoUrl || null],
           lastMessage: payload.content,
           lastMessageAt: now,
         });

@@ -10,11 +10,12 @@ import {
 import { motion, AnimatePresence } from 'framer-motion';
 import authService from '../api/auth.service';
 import profileService from '../api/profile.service';
+import { getCachedProfilePhoto, setCachedProfilePhoto } from '../utils/profilePhotoCache';
 
 const UserAccountDropdown = () => {
   const [isOpen, setIsOpen] = useState(false);
-  const [profilePhotoUrl, setProfilePhotoUrl] = useState<string | null>(null);
   const user = authService.getCurrentUser();
+  const [profilePhotoUrl, setProfilePhotoUrl] = useState<string | null>(getCachedProfilePhoto(user?.id));
   const navigate = useNavigate();
   const dropdownRef = useRef<HTMLDivElement>(null);
 
@@ -30,11 +31,19 @@ const UserAccountDropdown = () => {
   }, []);
 
   useEffect(() => {
+    if (!user?.id) return;
+
     profileService
       .getMyProfile()
-      .then((data) => setProfilePhotoUrl(data.profilePhotoUrl || null))
-      .catch(() => setProfilePhotoUrl(null));
-  }, []);
+      .then((data) => {
+        const photo = data.profilePhotoUrl || null;
+        setProfilePhotoUrl(photo);
+        setCachedProfilePhoto(user.id, photo);
+      })
+      .catch(() => {
+        // Keep cached photo when profile API is temporarily unavailable.
+      });
+  }, [user?.id]);
 
   const handleLogout = () => {
     authService.logout();
@@ -96,7 +105,9 @@ const UserAccountDropdown = () => {
           {profilePhotoUrl ? (
             <img src={profilePhotoUrl} alt="Profile" className="w-full h-full object-cover" />
           ) : (
-            <UserCircle className={isOpen ? "text-indigo-400" : "text-slate-400"} size={24} />
+            <span className={`text-sm font-black ${isOpen ? "text-indigo-400" : "text-slate-400"}`}>
+              {user?.fullName?.charAt(0) ?? <UserCircle size={24} />}
+            </span>
           )}
         </div>
         
