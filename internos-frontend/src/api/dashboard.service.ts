@@ -20,6 +20,7 @@ class DashboardService {
       ['Pending Tasks', stats.pendingTasks],
       ['In Progress Tasks', stats.inProgressTasks],
       ['Completed Tasks', stats.completedTasks],
+      ['Overdue Tasks', stats.overdueTasks],
       ['Total Interns', stats.totalInterns],
       ['Active Mentors', stats.activeMentors],
       ['Comments Today', stats.commentsToday],

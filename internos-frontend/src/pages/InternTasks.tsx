@@ -6,6 +6,7 @@ import {
   CheckCircle2, 
   Circle, 
   AlertCircle, 
+  AlertTriangle,
   Calendar, 
   ArrowRight,
   Inbox
@@ -45,6 +46,12 @@ const InternTasks = () => {
     if (activeTab === 'All') return true;
     return t.status === activeTab || (activeTab === 'Pending' && (t.status === 'InProgress' || t.status === 'Pending'));
   });
+
+  const isTaskOverdue = (task: ITask) =>
+    !!task.dueDate &&
+    task.status !== 'Completed' &&
+    task.status !== 'Submitted' &&
+    new Date(task.dueDate).getTime() < Date.now();
 
   if (loading) return (
     <div className="space-y-4 max-w-5xl mx-auto">
@@ -104,6 +111,7 @@ const InternTasks = () => {
             const isCompleted = task.status === 'Completed';
             const isInProgress = task.status === 'InProgress';
             const isSubmitted = task.status === 'Submitted';
+            const isOverdue = isTaskOverdue(task);
 
             return (
               <div
@@ -139,6 +147,11 @@ const InternTasks = () => {
                     <h3 className={`font-bold text-lg truncate ${isCompleted ? 'text-slate-400 line-through' : 'text-slate-800'}`}>
                       {task.title}
                     </h3>
+                    {isOverdue && (
+                      <span className="inline-flex items-center gap-1 px-2 py-0.5 rounded-full text-[10px] font-black uppercase tracking-wider bg-rose-50 text-rose-600 border border-rose-100">
+                        <AlertTriangle size={11} /> Overdue
+                      </span>
+                    )}
                   </div>
                   <p className="text-slate-500 text-sm line-clamp-1 mb-3 group-hover:text-slate-600 transition-colors">
                     {task.description}
@@ -147,7 +160,9 @@ const InternTasks = () => {
                   <div className="flex flex-wrap items-center gap-4">
                     <div className="flex items-center gap-1.5 text-[11px] font-bold text-slate-400 uppercase tracking-tight">
                       <Calendar size={14} />
-                      {new Date(task.createdAt).toLocaleDateString(undefined, { month: 'short', day: 'numeric' })}
+                      {task.dueDate
+                        ? `Due ${new Date(task.dueDate).toLocaleDateString(undefined, { month: 'short', day: 'numeric' })}`
+                        : `Created ${new Date(task.createdAt).toLocaleDateString(undefined, { month: 'short', day: 'numeric' })}`}
                     </div>
                     
                     <span className={`px-2.5 py-0.5 rounded-full text-[10px] font-black uppercase tracking-widest border ${

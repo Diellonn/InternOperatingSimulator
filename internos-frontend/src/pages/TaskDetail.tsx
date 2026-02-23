@@ -12,7 +12,9 @@ import {
   Download,
   FileText,
   AlertCircle,
-  Clock
+  Clock,
+  Calendar,
+  AlertTriangle
 } from 'lucide-react';
 
 const TaskDetail = () => {
@@ -126,6 +128,7 @@ const TaskDetail = () => {
 
   const isReviewer = currentUser?.role === 'Admin' || currentUser?.role === 'Mentor';
   const isAssignedToMe = task.assignedToUserId === currentUser?.id;
+  const isOverdue = !!task.dueDate && task.status !== 'Completed' && task.status !== 'Submitted' && new Date(task.dueDate).getTime() < Date.now();
 
   return (
     <div className="space-y-8 pb-20">
@@ -145,6 +148,12 @@ const TaskDetail = () => {
             'bg-indigo-50 text-indigo-700 border-indigo-100'
           }`}>
             {task.status}
+          </span>
+          <span className={`px-4 py-2 rounded-xl text-[10px] font-black uppercase tracking-[0.2em] border-2 transition-colors duration-500 inline-flex items-center gap-1.5 ${
+            isOverdue ? 'bg-rose-50 text-rose-700 border-rose-100' : 'bg-slate-50 text-slate-700 border-slate-100'
+          }`}>
+            {isOverdue ? <AlertTriangle size={12} /> : <Calendar size={12} />}
+            {task.dueDate ? `Due ${new Date(task.dueDate).toLocaleDateString()}` : 'No Deadline'}
           </span>
           
           {isReviewer && task.status === 'Submitted' && (

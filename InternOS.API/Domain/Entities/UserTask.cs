@@ -9,6 +9,7 @@ public class UserTask
     public string Description { get; set; } = string.Empty;
     public TaskStatus Status { get; set; } = TaskStatus.Pending;
     public DateTime CreatedAt { get; set; } = DateTime.UtcNow;
+    public DateTime? DueDate { get; set; }
 
     public DateTime? CompletedAt { get; set; }
 

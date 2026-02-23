@@ -60,6 +60,7 @@ public class TaskRepository : ITaskRepository
     {
         var totalTasks = await _context.UserTasks.CountAsync();
         var completedTasks = await _context.UserTasks.CountAsync(t => (int)t.Status == 2);
+        var nowUtc = DateTime.UtcNow;
         var healthScore = totalTasks == 0
             ? 100
             : (int)Math.Round((double)completedTasks / totalTasks * 100);
@@ -70,6 +71,7 @@ public class TaskRepository : ITaskRepository
             PendingTasks = await _context.UserTasks.CountAsync(t => (int)t.Status == 0),
             InProgressTasks = await _context.UserTasks.CountAsync(t => (int)t.Status == 1),
             CompletedTasks = completedTasks,
+            OverdueTasks = await _context.UserTasks.CountAsync(t => t.DueDate != null && t.DueDate < nowUtc && t.Status != InternOS.API.Domain.Enums.TaskStatus.Completed),
             TotalInterns = await _context.Users.CountAsync(static u => u.Role == UserRole.Intern),
             ActiveMentors = await _context.Users.CountAsync(static u => u.Role == UserRole.Mentor),
             CommentsToday = await _context.Comments.CountAsync(c => c.CreatedAt >= DateTime.UtcNow.Date),

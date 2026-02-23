@@ -34,4 +34,6 @@ public class CreateTaskDto
 
     [Range(1, int.MaxValue, ErrorMessage = "Please select a valid intern")]
     public int AssignedToUserId { get; set; }
+
+    public DateTime? DueDate { get; set; }
 }

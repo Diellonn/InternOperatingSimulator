@@ -34,6 +34,7 @@ public class TasksController : ControllerBase
             t.Description,
             Status = t.Status.ToString(),
             t.CreatedAt,
+            t.DueDate,
             t.CompletedAt,
             t.AssignedToUserId,
             t.CreatedByUserId,
@@ -69,6 +70,7 @@ public class TasksController : ControllerBase
             task.AssignedToUserId,
             task.CreatedByUserId,
             task.CreatedAt,
+            task.DueDate,
             task.CompletedAt
         });
     }
@@ -89,7 +91,8 @@ public class TasksController : ControllerBase
             AssignedToUserId = dto.AssignedToUserId,
             CreatedByUserId = adminId,
             Status = Domain.Enums.TaskStatus.Pending,
-            CreatedAt = DateTime.UtcNow
+            CreatedAt = DateTime.UtcNow,
+            DueDate = dto.DueDate
         };
 
         await _taskRepo.CreateTaskAsync(task);
@@ -351,7 +354,8 @@ public class TasksController : ControllerBase
             t.Title,
             t.Description,
             Status = t.Status.ToString(),
-            t.CreatedAt
+            t.CreatedAt,
+            t.DueDate
         }));
     }
 }

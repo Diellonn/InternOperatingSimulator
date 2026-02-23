@@ -24,6 +24,20 @@ const Messages = () => {
     );
   };
 
+  const mergeApiWithLocal = (apiConversations: IConversation[], localConversations: IConversation[]) => {
+    let merged = [...apiConversations];
+    const apiIds = new Set(apiConversations.map((item) => item.id));
+
+    for (const localConversation of localConversations) {
+      if (!apiIds.has(localConversation.id)) {
+        // Keep locally created conversations that may not yet have first persisted message.
+        merged = upsertConversation(merged, localConversation);
+      }
+    }
+
+    return merged;
+  };
+
   const loadPartnerUsers = async () => {
     if (!currentUser) return [] as User[];
 
@@ -46,11 +60,7 @@ const Messages = () => {
   const loadConversations = async (userId: number) => {
     const data = await messagesService.getConversations(userId);
     setConversations((prev) => {
-      const activeFromPrev = prev.find((item) => item.id === activeConversationId);
-      if (!activeFromPrev) return data;
-
-      const existsInApi = data.some((item) => item.id === activeConversationId);
-      return existsInApi ? data : upsertConversation(data, activeFromPrev);
+      return mergeApiWithLocal(data, prev);
     });
 
     if (!activeConversationId && data.length > 0) setActiveConversationId(data[0].id);
@@ -136,6 +146,14 @@ const Messages = () => {
     if (!partner) return;
 
     try {
+      const existingConversationId = `conv-${Math.min(currentUser.id, partner.id)}-${Math.max(currentUser.id, partner.id)}`;
+      const existingConversation = conversations.find((item) => item.id === existingConversationId);
+      if (existingConversation) {
+        setActiveConversationId(existingConversation.id);
+        setSelectedPartnerId('');
+        return;
+      }
+
       const conversation = await messagesService.startConversation(currentUser, partner);
       setActiveConversationId(conversation.id);
       setConversations((prev) => upsertConversation(prev, conversation));

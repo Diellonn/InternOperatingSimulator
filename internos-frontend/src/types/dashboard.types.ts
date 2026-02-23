@@ -3,6 +3,7 @@ export interface IDashboardStats {
   pendingTasks: number;
   inProgressTasks: number;
   completedTasks: number;
+  overdueTasks: number;
   totalInterns: number;
   activeMentors: number;
   commentsToday: number;

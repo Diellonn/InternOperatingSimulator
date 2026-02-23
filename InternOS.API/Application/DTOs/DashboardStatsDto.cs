@@ -8,6 +8,7 @@ public class DashboardStatsDto
     public int PendingTasks { get; set; }
     public int InProgressTasks { get; set; }
     public int CompletedTasks { get; set; }
+    public int OverdueTasks { get; set; }
     public int TotalInterns { get; set; }
     public int ActiveMentors { get; set; }
     public int CommentsToday { get; set; }

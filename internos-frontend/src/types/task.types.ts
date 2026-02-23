@@ -6,6 +6,7 @@ export interface ITask {
   assignedToUserId?: number;
   createdByUserId?: number;
   createdAt: Date;
+  dueDate?: Date;
   completedAt?: Date;
   commentCount?: number;
   latestComment?: string;
@@ -15,6 +16,7 @@ export interface ICreateTaskRequest {
   title: string;
   description: string;
   assignedToUserId: number;
+  dueDate?: string;
 }
 
 export interface IUpdateTaskStatusRequest {

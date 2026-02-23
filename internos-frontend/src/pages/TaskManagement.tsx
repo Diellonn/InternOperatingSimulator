@@ -4,7 +4,7 @@ import { motion, AnimatePresence } from 'framer-motion';
 import { 
   Plus, Eye, Trash2, Calendar, MessageSquare, 
   CheckCircle2, Clock, AlertCircle, User as UserIcon, X,
-  Trash
+  Trash, AlertTriangle
 } from 'lucide-react';
 import taskService from '../api/task.service';
 import userService from '../api/user.service';
@@ -21,7 +21,7 @@ const TaskManagement = () => {
   const [showForm, setShowForm] = useState(false);
   const [taskToDelete, setTaskToDelete] = useState<{id: number, title: string} | null>(null);
   
-  const [formData, setFormData] = useState({ title: '', description: '', assignedToUserId: '' });
+  const [formData, setFormData] = useState({ title: '', description: '', assignedToUserId: '', dueDate: '' });
   
   const navigate = useNavigate();
 
@@ -50,9 +50,10 @@ const TaskManagement = () => {
       await taskService.createTask({
         title: formData.title,
         description: formData.description,
-        assignedToUserId: parseInt(formData.assignedToUserId)
+        assignedToUserId: parseInt(formData.assignedToUserId),
+        dueDate: formData.dueDate || undefined
       });
-      setFormData({ title: '', description: '', assignedToUserId: '' });
+      setFormData({ title: '', description: '', assignedToUserId: '', dueDate: '' });
       setShowForm(false);
       setError('');
       loadTasksAndUsers();
@@ -200,6 +201,16 @@ const TaskManagement = () => {
                   </div>
                 </div>
 
+                <div className="space-y-2">
+                  <label className="text-[10px] font-black uppercase tracking-widest text-slate-400 ml-2">Due Date</label>
+                  <input
+                    type="date"
+                    value={formData.dueDate}
+                    onChange={(e) => setFormData({ ...formData, dueDate: e.target.value })}
+                    className="w-full px-6 py-4 bg-slate-50 border border-slate-100 rounded-2xl focus:ring-2 focus:ring-indigo-500 outline-none font-bold text-slate-700 transition-all"
+                  />
+                </div>
+
                 <div className="flex flex-col sm:flex-row gap-3 pt-4">
                   <button type="button" onClick={() => setShowForm(false)} className="order-2 sm:order-1 flex-1 py-4 bg-slate-100 text-slate-600 rounded-2xl font-black uppercase text-[10px] tracking-widest hover:bg-slate-200 transition-all">Cancel</button>
                   <button type="submit" className="order-1 sm:order-2 flex-1 py-4 bg-indigo-600 text-white rounded-2xl font-black uppercase text-[10px] tracking-widest shadow-lg shadow-indigo-100 hover:bg-indigo-700 transition-all">Publish Task</button>
@@ -224,9 +235,15 @@ const TaskManagement = () => {
             </thead>
             <tbody className="divide-y divide-slate-50">
               {tasks.map(task => (
+                (() => {
+                  const isOverdue = !!task.dueDate && task.status !== 'Completed' && task.status !== 'Submitted' && new Date(task.dueDate).getTime() < Date.now();
+                  return (
                 <tr key={task.id} className="hover:bg-slate-50/50 transition-colors group">
                   <td className="px-8 py-6">
-                    <p className="font-bold text-slate-900 group-hover:text-indigo-600 transition-colors mb-1">{task.title}</p>
+                    <p className="font-bold text-slate-900 group-hover:text-indigo-600 transition-colors mb-1 flex items-center gap-2">
+                      {task.title}
+                      {isOverdue && <span className="inline-flex items-center gap-1 px-2 py-0.5 rounded-lg bg-rose-50 text-rose-600 text-[10px] font-black uppercase"><AlertTriangle size={12} />Overdue</span>}
+                    </p>
                     <p className="text-xs text-slate-400 font-medium max-w-xs truncate">{task.description}</p>
                   </td>
                   <td className="px-8 py-6">
@@ -243,8 +260,8 @@ const TaskManagement = () => {
                   <td className="px-8 py-6">
                     <div className="flex items-center gap-4 text-slate-400">
                       <div className="flex items-center gap-1.5 text-xs font-bold">
-                        <Calendar size={14} />
-                        {new Date(task.createdAt).toLocaleDateString()}
+                        <Calendar size={14} className={isOverdue ? "text-rose-500" : ""} />
+                        {task.dueDate ? new Date(task.dueDate).toLocaleDateString() : "No deadline"}
                       </div>
                       <div className="flex items-center gap-1.5 text-xs font-bold">
                         <MessageSquare size={14} className={task.commentCount ? "text-indigo-500" : ""} />
@@ -269,6 +286,8 @@ const TaskManagement = () => {
                     </div>
                   </td>
                 </tr>
+                  );
+                })()
               ))}
             </tbody>
           </table>

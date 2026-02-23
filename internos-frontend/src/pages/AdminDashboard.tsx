@@ -9,6 +9,7 @@ import {
   Clock, 
   MessageSquare, 
   TrendingUp,
+  AlertTriangle,
   ArrowRight,
   Activity,
   Zap
@@ -43,6 +44,7 @@ const AdminDashboard = () => {
     { title: 'Pending Review', label: 'Queue', value: stats?.pendingTasks, icon: <Clock size={20} />, theme: 'amber' },
     { title: 'Active Heat', label: 'In Progress', value: stats?.inProgressTasks, icon: <TrendingUp size={20} />, theme: 'blue' },
     { title: 'Yield Rate', label: 'Completed', value: stats?.completedTasks, icon: <CheckCircle size={20} />, theme: 'emerald' },
+    { title: 'Deadline Alert', label: 'Overdue', value: stats?.overdueTasks, icon: <AlertTriangle size={20} />, theme: 'amber' },
     { title: 'Talent Pool', label: 'Interns', value: stats?.totalInterns, icon: <Users size={20} />, theme: 'violet' },
     { title: 'System Pulse', label: 'Daily Comments', value: stats?.commentsToday, icon: <MessageSquare size={20} />, theme: 'rose' },
   ];
