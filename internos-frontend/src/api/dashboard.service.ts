@@ -21,7 +21,9 @@ class DashboardService {
       ['In Progress Tasks', stats.inProgressTasks],
       ['Completed Tasks', stats.completedTasks],
       ['Total Interns', stats.totalInterns],
+      ['Active Mentors', stats.activeMentors],
       ['Comments Today', stats.commentsToday],
+      ['Health Score', `${stats.healthScore}%`],
       ['Generated At', generatedAt.toISOString()],
     ];
 

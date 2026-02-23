@@ -4,7 +4,9 @@ export interface IDashboardStats {
   inProgressTasks: number;
   completedTasks: number;
   totalInterns: number;
+  activeMentors: number;
   commentsToday: number;
+  healthScore: number;
   recentActivity: IActivityLog[];
 }
 

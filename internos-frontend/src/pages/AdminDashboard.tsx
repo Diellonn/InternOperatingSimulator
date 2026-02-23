@@ -179,14 +179,14 @@ const AdminDashboard = () => {
            
            <div>
               <h3 className="text-2xl font-black leading-tight mb-4">Platform <br/>Health Score</h3>
-              <div className="text-6xl font-black mb-2">98<span className="text-indigo-400 text-3xl">%</span></div>
+              <div className="text-6xl font-black mb-2">{stats?.healthScore ?? 0}<span className="text-indigo-400 text-3xl">%</span></div>
               <p className="text-indigo-200 text-sm font-medium">All systems operational. Network latency is optimal at 42ms.</p>
            </div>
 
            <div className="mt-8 space-y-4 relative z-10">
               <div className="p-4 bg-white/10 rounded-2xl border border-white/10 backdrop-blur-md">
                  <p className="text-[10px] font-bold uppercase tracking-widest text-indigo-300 mb-1">Active Mentors</p>
-                 <p className="text-xl font-black">12 Available</p>
+                 <p className="text-xl font-black">{stats?.activeMentors ?? 0} Available</p>
               </div>
               <button
                 onClick={handleGenerateReport}

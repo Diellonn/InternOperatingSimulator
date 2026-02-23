@@ -58,14 +58,22 @@ public class TaskRepository : ITaskRepository
 
     public async Task<DashboardStatsDto> GetDashboardStatsAsync()
     {
+        var totalTasks = await _context.UserTasks.CountAsync();
+        var completedTasks = await _context.UserTasks.CountAsync(t => (int)t.Status == 2);
+        var healthScore = totalTasks == 0
+            ? 100
+            : (int)Math.Round((double)completedTasks / totalTasks * 100);
+
         var stats = new DashboardStatsDto
         {
-            TotalTasks = await _context.UserTasks.CountAsync(),
+            TotalTasks = totalTasks,
             PendingTasks = await _context.UserTasks.CountAsync(t => (int)t.Status == 0),
             InProgressTasks = await _context.UserTasks.CountAsync(t => (int)t.Status == 1),
-            CompletedTasks = await _context.UserTasks.CountAsync(t => (int)t.Status == 2),
+            CompletedTasks = completedTasks,
             TotalInterns = await _context.Users.CountAsync(static u => u.Role == UserRole.Intern),
+            ActiveMentors = await _context.Users.CountAsync(static u => u.Role == UserRole.Mentor),
             CommentsToday = await _context.Comments.CountAsync(c => c.CreatedAt >= DateTime.UtcNow.Date),
+            HealthScore = healthScore,
             
             // Fetch the 5 most recent activities
             RecentActivity = await _context.ActivityLogs

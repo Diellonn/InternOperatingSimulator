@@ -9,7 +9,9 @@ public class DashboardStatsDto
     public int InProgressTasks { get; set; }
     public int CompletedTasks { get; set; }
     public int TotalInterns { get; set; }
+    public int ActiveMentors { get; set; }
     public int CommentsToday { get; set; }
+    public int HealthScore { get; set; }
     
     // NEW: The list of recent events
     public List<ActivityLogDto> RecentActivity { get; set; } = new();
