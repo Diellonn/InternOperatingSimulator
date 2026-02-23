@@ -1,5 +1,12 @@
 {
-  "dependencies": {
-    "@tailwindcss/postcss": "^4.2.0"
+  "private": true,
+  "workspaces": [
+    "internos-frontend"
+  ],
+  "scripts": {
+    "build": "npm run build --workspace internos-frontend"
+  },
+  "engines": {
+    "node": "20.x"
   }
 }
