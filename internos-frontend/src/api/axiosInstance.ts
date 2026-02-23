@@ -1,7 +1,7 @@
 import axios from 'axios';
 
 const axiosInstance = axios.create({
-  baseURL: 'https://dielli-api-frejb9euegeycngb.germanywestcentral-01.azurewebsites.net', // Sigurohu që porti përputhet me launchSettings.json të .NET
+  baseURL: 'https://dielli-api-frejb9euegeycngb.germanywestcentral-01.azurewebsites.net/api', // Sigurohu që porti përputhet me launchSettings.json të .NET
   headers: {
     'Content-Type': 'application/json',
   },
