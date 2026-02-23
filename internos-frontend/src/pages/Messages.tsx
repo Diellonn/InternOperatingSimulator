@@ -17,6 +17,13 @@ const Messages = () => {
   const [error, setError] = useState('');
   const messageEndRef = useRef<HTMLDivElement>(null);
 
+  const upsertConversation = (list: IConversation[], conversation: IConversation) => {
+    const without = list.filter((item) => item.id !== conversation.id);
+    return [conversation, ...without].sort(
+      (a, b) => new Date(b.lastMessageAt).getTime() - new Date(a.lastMessageAt).getTime()
+    );
+  };
+
   const loadPartnerUsers = async () => {
     if (!currentUser) return [] as User[];
 
@@ -34,10 +41,15 @@ const Messages = () => {
 
   const loadConversations = async (userId: number) => {
     const data = await messagesService.getConversations(userId);
-    setConversations(data);
-    if (!activeConversationId && data.length > 0) {
-      setActiveConversationId(data[0].id);
-    }
+    setConversations((prev) => {
+      const activeFromPrev = prev.find((item) => item.id === activeConversationId);
+      if (!activeFromPrev) return data;
+
+      const existsInApi = data.some((item) => item.id === activeConversationId);
+      return existsInApi ? data : upsertConversation(data, activeFromPrev);
+    });
+
+    if (!activeConversationId && data.length > 0) setActiveConversationId(data[0].id);
   };
 
   const loadMessages = async (conversationId: string) => {
@@ -122,8 +134,8 @@ const Messages = () => {
     try {
       const conversation = await messagesService.startConversation(currentUser, partner);
       setActiveConversationId(conversation.id);
+      setConversations((prev) => upsertConversation(prev, conversation));
       setSelectedPartnerId('');
-      await loadConversations(currentUser.id);
       await loadMessages(conversation.id);
     } catch {
       setError('Failed to start conversation.');
