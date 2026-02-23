@@ -138,6 +138,10 @@ const DashboardLayout = ({ children }: { children: React.ReactNode }) => {
           })}
         </nav>
 
+        <div className="px-6 pb-3 text-[10px] text-slate-500 font-semibold tracking-wide">
+          Powered by <span className="text-slate-300">Diellon Haxhaj</span>
+        </div>
+
         {/* Sidebar Footer: User Identity */}
         <UserAccountDropdown />
       </aside>
