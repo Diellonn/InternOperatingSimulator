@@ -9,6 +9,7 @@ import TaskDetail from './pages/TaskDetail';
 import Users from './pages/Users';
 import ActivityLog from './pages/ActivityLog';
 import ProfileSettings from './pages/ProfileSettings';
+import Messages from './pages/Messages';
 import { ProtectedRoute } from './components/ProtectedRoute';
 
 function App() {
@@ -91,6 +92,15 @@ function App() {
           <ProtectedRoute>
             <DashboardLayout>
               <ActivityLog />
+            </DashboardLayout>
+          </ProtectedRoute>
+        } />
+
+        {/* Messages */}
+        <Route path="/messages" element={
+          <ProtectedRoute>
+            <DashboardLayout>
+              <Messages />
             </DashboardLayout>
           </ProtectedRoute>
         } />

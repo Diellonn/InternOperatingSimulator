@@ -11,6 +11,7 @@ public class AppDbContext : DbContext
     public DbSet<UserTask> UserTasks { get; set; }
     public DbSet<Comment> Comments { get; set; }
     public DbSet<ActivityLog> ActivityLogs { get; set; }
+    public DbSet<Message> Messages { get; set; }
 
     protected override void OnModelCreating(ModelBuilder modelBuilder)
     {
@@ -40,5 +41,17 @@ public class AppDbContext : DbContext
             .WithMany(t => t.Comments)
             .HasForeignKey(c => c.TaskId)
             .OnDelete(DeleteBehavior.Cascade);
+
+        modelBuilder.Entity<Message>()
+            .HasOne(m => m.SenderUser)
+            .WithMany(u => u.SentMessages)
+            .HasForeignKey(m => m.SenderUserId)
+            .OnDelete(DeleteBehavior.Restrict);
+
+        modelBuilder.Entity<Message>()
+            .HasOne(m => m.RecipientUser)
+            .WithMany(u => u.ReceivedMessages)
+            .HasForeignKey(m => m.RecipientUserId)
+            .OnDelete(DeleteBehavior.Restrict);
     }
 }

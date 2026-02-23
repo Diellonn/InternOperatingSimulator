@@ -13,4 +13,6 @@ public class User
 
     // Navigation property: Tasks assigned to this user
     public ICollection<UserTask> AssignedTasks { get; set; } = new List<UserTask>();
+    public ICollection<Message> SentMessages { get; set; } = new List<Message>();
+    public ICollection<Message> ReceivedMessages { get; set; } = new List<Message>();
 }

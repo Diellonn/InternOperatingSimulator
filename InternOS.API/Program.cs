@@ -14,6 +14,7 @@ builder.Services.AddControllers();
 builder.Services.AddScoped<ICommentRepository, CommentRepository>();
 builder.Services.AddScoped<IActivityLogRepository, ActivityLogRepository>();
 builder.Services.AddScoped<ITaskRepository, TaskRepository>();
+builder.Services.AddScoped<IMessageRepository, MessageRepository>();
 builder.Services.AddOpenApi(); // Add this if it's missing
 
 // 2. Configure Authentication (This part was missing!)
