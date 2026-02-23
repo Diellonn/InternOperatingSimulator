@@ -16,6 +16,7 @@ import {
 const AdminDashboard = () => {
   const [stats, setStats] = useState<IDashboardStats | null>(null);
   const [loading, setLoading] = useState(true);
+  const [reportLoading, setReportLoading] = useState(false);
 
   useEffect(() => {
     dashboardService.getStats()
@@ -54,6 +55,20 @@ const AdminDashboard = () => {
       rose: 'text-rose-600 bg-rose-50 border-rose-100 shadow-rose-100/50',
     };
     return themes[theme] || themes.indigo;
+  };
+
+  const handleGenerateReport = async () => {
+    if (!stats || reportLoading) return;
+
+    setReportLoading(true);
+    try {
+      dashboardService.downloadCsvReport(stats);
+    } catch (error) {
+      console.error('Error generating dashboard report', error);
+      window.alert('Failed to generate report. Please try again.');
+    } finally {
+      setReportLoading(false);
+    }
   };
 
   return (
@@ -173,8 +188,12 @@ const AdminDashboard = () => {
                  <p className="text-[10px] font-bold uppercase tracking-widest text-indigo-300 mb-1">Active Mentors</p>
                  <p className="text-xl font-black">12 Available</p>
               </div>
-              <button className="w-full py-4 bg-white text-indigo-900 rounded-2xl font-black text-xs uppercase tracking-[0.2em] shadow-xl hover:bg-indigo-50 transition-all flex items-center justify-center gap-2">
-                 Generate Report <ArrowRight size={14} />
+              <button
+                onClick={handleGenerateReport}
+                disabled={!stats || reportLoading}
+                className="w-full py-4 bg-white text-indigo-900 rounded-2xl font-black text-xs uppercase tracking-[0.2em] shadow-xl hover:bg-indigo-50 transition-all flex items-center justify-center gap-2 disabled:opacity-60 disabled:cursor-not-allowed"
+              >
+                 {reportLoading ? 'Generating...' : 'Generate Report'} <ArrowRight size={14} />
               </button>
            </div>
         </div>
