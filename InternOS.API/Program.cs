@@ -76,12 +76,12 @@ app.UseCors("AllowAll");
 
 var uploadsPath = Path.Combine(builder.Environment.ContentRootPath, "Uploads");
 Directory.CreateDirectory(uploadsPath);
-
+    app.UseSwagger();
+    app.UseSwaggerUI();
 // 5. Configure the HTTP request pipeline.
 if (app.Environment.IsDevelopment())
 {
-    app.UseSwagger();
-    app.UseSwaggerUI();
+
 }
 
 // Order matters here! 
