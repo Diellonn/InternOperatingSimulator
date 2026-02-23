@@ -1,4 +1,4 @@
-import React, { useEffect, useMemo, useRef, useState } from 'react';
+﻿import React, { useEffect, useMemo, useRef, useState } from 'react';
 import { Link, useLocation } from 'react-router-dom';
 import {
   LayoutDashboard,
@@ -10,59 +10,19 @@ import {
   Search,
   Menu,
   Clock3,
-  Moon,
-  Sun,
   MessageCircle
 } from 'lucide-react';
 import authService from '../../api/auth.service';
 import UserAccountDropdown from '../UserAccountDropdown';
 import activityService, { type ActivityLog } from '../../api/activity.service';
 
-type ThemePreference = 'light' | 'dark' | 'system';
-
 const DashboardLayout = ({ children }: { children: React.ReactNode }) => {
-  const THEME_STORAGE_KEY = 'theme_preference';
   const user = authService.getCurrentUser();
   const location = useLocation();
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
   const [isNotifOpen, setIsNotifOpen] = useState(false);
   const [notifications, setNotifications] = useState<ActivityLog[]>([]);
-  const [themePreference, setThemePreference] = useState<ThemePreference>('system');
-  const [isDarkMode, setIsDarkMode] = useState(false);
   const notifRef = useRef<HTMLDivElement>(null);
-
-  useEffect(() => {
-    const storedPreference = localStorage.getItem(THEME_STORAGE_KEY) as ThemePreference | null;
-    if (storedPreference === 'light' || storedPreference === 'dark' || storedPreference === 'system') {
-      setThemePreference(storedPreference);
-    }
-  }, []);
-
-  useEffect(() => {
-    const mediaQuery = window.matchMedia('(prefers-color-scheme: dark)');
-
-    const applyTheme = () => {
-      const nextIsDark = themePreference === 'system' ? mediaQuery.matches : themePreference === 'dark';
-      setIsDarkMode(nextIsDark);
-      document.documentElement.style.colorScheme = nextIsDark ? 'dark' : 'light';
-      document.documentElement.classList.toggle('theme-dark', nextIsDark);
-    };
-
-    applyTheme();
-
-    const handleSystemChange = () => {
-      if (themePreference === 'system') applyTheme();
-    };
-
-    mediaQuery.addEventListener('change', handleSystemChange);
-    return () => mediaQuery.removeEventListener('change', handleSystemChange);
-  }, [themePreference]);
-
-  const toggleTheme = () => {
-    const nextPreference: ThemePreference = isDarkMode ? 'light' : 'dark';
-    setThemePreference(nextPreference);
-    localStorage.setItem(THEME_STORAGE_KEY, nextPreference);
-  };
 
   useEffect(() => {
     const fetchNotifications = async () => {
@@ -119,7 +79,7 @@ const DashboardLayout = ({ children }: { children: React.ReactNode }) => {
   const activeItem = menuItems.find(i => i.path === location.pathname);
 
   return (
-    <div className={`flex h-screen font-sans ${isDarkMode ? 'bg-slate-950 text-slate-100' : 'bg-[#F8FAFC] text-slate-900'}`}>
+    <div className="flex h-screen bg-[#F8FAFC] font-sans text-slate-900">
       {isMobileMenuOpen && (
         <div
           className="fixed inset-0 bg-slate-900/60 backdrop-blur-sm z-[40] lg:hidden"
@@ -183,57 +143,36 @@ const DashboardLayout = ({ children }: { children: React.ReactNode }) => {
       </aside>
 
       <main className="flex-1 flex flex-col min-w-0 overflow-hidden">
-        <header className={`h-20 flex items-center justify-between px-8 backdrop-blur-xl border-b sticky top-0 z-30 ${
-          isDarkMode ? 'bg-slate-900/80 border-slate-800' : 'bg-white/70 border-slate-200/60'
-        }`}>
+        <header className="h-20 flex items-center justify-between px-8 bg-white/70 backdrop-blur-xl border-b border-slate-200/60 sticky top-0 z-30">
           <div className="flex items-center gap-4">
             <button
               onClick={() => setIsMobileMenuOpen(true)}
-              className={`lg:hidden p-2 rounded-lg transition-colors ${
-                isDarkMode ? 'text-slate-300 hover:bg-slate-800' : 'text-slate-500 hover:bg-slate-100'
-              }`}
+              className="lg:hidden p-2 text-slate-500 hover:bg-slate-100 rounded-lg transition-colors"
             >
               <Menu size={20} />
             </button>
 
             <div className="hidden sm:block">
-              <div className={`flex items-center gap-2 text-xs font-bold uppercase tracking-widest mb-0.5 ${
-                isDarkMode ? 'text-slate-500' : 'text-slate-400'
-              }`}>
+              <div className="flex items-center gap-2 text-xs font-bold text-slate-400 uppercase tracking-widest mb-0.5">
                 <span>Workspace</span>
                 <ChevronRight size={10} />
                 <span className="text-indigo-500">{user?.role}</span>
               </div>
-              <h1 className={`text-xl font-black tracking-tight ${isDarkMode ? 'text-slate-100' : 'text-slate-900'}`}>
+              <h1 className="text-xl font-black text-slate-900 tracking-tight">
                 {activeItem?.label || 'Overview'}
               </h1>
             </div>
           </div>
 
           <div className="flex items-center gap-3">
-            <div className={`hidden md:flex items-center gap-2 px-4 py-2 rounded-xl border group focus-within:ring-2 focus-within:ring-indigo-500/20 transition-all ${
-              isDarkMode ? 'bg-slate-800 border-slate-700' : 'bg-slate-100 border-slate-200'
-            }`}>
-              <Search size={16} className={`group-focus-within:text-indigo-500 ${isDarkMode ? 'text-slate-500' : 'text-slate-400'}`} />
+            <div className="hidden md:flex items-center gap-2 bg-slate-100 px-4 py-2 rounded-xl border border-slate-200 group focus-within:ring-2 focus-within:ring-indigo-500/20 transition-all">
+              <Search size={16} className="text-slate-400 group-focus-within:text-indigo-500" />
               <input
                 type="text"
                 placeholder="Search anything..."
-                className={`bg-transparent border-none outline-none text-sm font-medium w-48 ${
-                  isDarkMode ? 'text-slate-200 placeholder:text-slate-500' : 'text-slate-700 placeholder:text-slate-400'
-                }`}
+                className="bg-transparent border-none outline-none text-sm font-medium w-48 text-slate-700 placeholder:text-slate-400"
               />
             </div>
-
-            <button
-              onClick={toggleTheme}
-              className={`p-2.5 rounded-xl transition-all ${
-                isDarkMode ? 'text-amber-300 hover:bg-slate-800' : 'text-slate-500 hover:bg-slate-100'
-              }`}
-              title={isDarkMode ? 'Switch to light mode' : 'Switch to dark mode'}
-              aria-label={isDarkMode ? 'Switch to light mode' : 'Switch to dark mode'}
-            >
-              {isDarkMode ? <Sun size={20} /> : <Moon size={20} />}
-            </button>
 
             <div className="relative" ref={notifRef}>
               <button
@@ -242,9 +181,7 @@ const DashboardLayout = ({ children }: { children: React.ReactNode }) => {
                   setIsNotifOpen(next);
                   if (next) markNotificationsAsRead();
                 }}
-                className={`relative p-2.5 rounded-xl transition-all ${
-                  isDarkMode ? 'text-slate-300 hover:bg-slate-800' : 'text-slate-500 hover:bg-slate-100'
-                }`}
+                className="relative p-2.5 text-slate-500 hover:bg-slate-100 rounded-xl transition-all"
               >
                 <Bell size={20} />
                 {unreadCount > 0 && (
@@ -255,30 +192,24 @@ const DashboardLayout = ({ children }: { children: React.ReactNode }) => {
               </button>
 
               {isNotifOpen && (
-                <div className={`absolute right-0 mt-2 w-96 max-w-[92vw] border rounded-2xl shadow-2xl z-[70] overflow-hidden ${
-                  isDarkMode ? 'bg-slate-900 border-slate-700' : 'bg-white border-slate-200'
-                }`}>
-                  <div className={`px-4 py-3 border-b flex items-center justify-between ${
-                    isDarkMode ? 'border-slate-800' : 'border-slate-100'
-                  }`}>
-                    <h3 className={`text-sm font-black ${isDarkMode ? 'text-slate-100' : 'text-slate-900'}`}>Notifications</h3>
+                <div className="absolute right-0 mt-2 w-96 max-w-[92vw] bg-white border border-slate-200 rounded-2xl shadow-2xl z-[70] overflow-hidden">
+                  <div className="px-4 py-3 border-b border-slate-100 flex items-center justify-between">
+                    <h3 className="text-sm font-black text-slate-900">Notifications</h3>
                     <Link to="/activities" className="text-xs font-bold text-indigo-600 hover:text-indigo-700">
                       View all
                     </Link>
                   </div>
                   <div className="max-h-96 overflow-y-auto">
                     {notifications.length === 0 ? (
-                      <div className={`p-6 text-sm text-center ${isDarkMode ? 'text-slate-400' : 'text-slate-500'}`}>No notifications yet.</div>
+                      <div className="p-6 text-sm text-slate-500 text-center">No notifications yet.</div>
                     ) : (
                       notifications.map((item) => (
-                        <div key={item.id} className={`px-4 py-3 border-b last:border-b-0 transition ${
-                          isDarkMode ? 'border-slate-800 hover:bg-slate-800/60' : 'border-slate-50 hover:bg-slate-50'
-                        }`}>
-                          <p className={`text-sm font-semibold ${isDarkMode ? 'text-slate-100' : 'text-slate-700'}`}>{item.action}</p>
-                          <p className={`text-xs mt-1 ${isDarkMode ? 'text-slate-400' : 'text-slate-500'}`}>
-                            {item.userName} {item.taskTitle && item.taskTitle !== 'N/A' ? `� ${item.taskTitle}` : ''}
+                        <div key={item.id} className="px-4 py-3 border-b border-slate-50 last:border-b-0 hover:bg-slate-50 transition">
+                          <p className="text-sm font-semibold text-slate-700">{item.action}</p>
+                          <p className="text-xs text-slate-500 mt-1">
+                            {item.userName} {item.taskTitle && item.taskTitle !== 'N/A' ? `• ${item.taskTitle}` : ''}
                           </p>
-                          <p className={`text-[11px] mt-1 inline-flex items-center gap-1 ${isDarkMode ? 'text-slate-500' : 'text-slate-400'}`}>
+                          <p className="text-[11px] text-slate-400 mt-1 inline-flex items-center gap-1">
                             <Clock3 size={12} /> {new Date(item.timestamp).toLocaleString()}
                           </p>
                         </div>
@@ -302,4 +233,3 @@ const DashboardLayout = ({ children }: { children: React.ReactNode }) => {
 };
 
 export default DashboardLayout;
-
