@@ -1,0 +1,6 @@
+@InternOS.API_HostAddress = http://localhost:5019
+
+GET {{InternOS.API_HostAddress}}/weatherforecast/
+Accept: application/json
+
+###

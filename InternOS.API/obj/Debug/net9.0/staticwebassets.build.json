@@ -1,0 +1,12 @@
+{
+  "Version": 1,
+  "Hash": "2j634fk9YCyJ6WocL9BNpI4nCjVmNQWpmc8nmz6B2w0=",
+  "Source": "InternOS.API",
+  "BasePath": "_content/InternOS.API",
+  "Mode": "Default",
+  "ManifestType": "Build",
+  "ReferencedProjectsConfiguration": [],
+  "DiscoveryPatterns": [],
+  "Assets": [],
+  "Endpoints": []
+}
