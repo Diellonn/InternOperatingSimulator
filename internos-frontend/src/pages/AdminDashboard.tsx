@@ -1,4 +1,5 @@
 import { useEffect, useState } from 'react';
+import { useNavigate } from 'react-router-dom';
 import dashboardService from '../api/dashboard.service';
 import type { IDashboardStats } from '../types/dashboard.types';
 import { 
@@ -14,6 +15,7 @@ import {
 } from 'lucide-react';
 
 const AdminDashboard = () => {
+  const navigate = useNavigate();
   const [stats, setStats] = useState<IDashboardStats | null>(null);
   const [loading, setLoading] = useState(true);
   const [reportLoading, setReportLoading] = useState(false);
@@ -129,7 +131,10 @@ const AdminDashboard = () => {
               <h2 className="text-2xl font-black text-slate-900 tracking-tight">System Logs</h2>
               <p className="text-sm text-slate-500 font-medium">Monitoring latest intern interactions</p>
             </div>
-            <button className="px-5 py-2.5 bg-slate-50 text-slate-600 rounded-xl text-xs font-black uppercase tracking-widest hover:bg-slate-900 hover:text-white transition-all">
+            <button
+              onClick={() => navigate('/activities')}
+              className="px-5 py-2.5 bg-slate-50 text-slate-600 rounded-xl text-xs font-black uppercase tracking-widest hover:bg-slate-900 hover:text-white transition-all"
+            >
               Full Archive
             </button>
           </div>
